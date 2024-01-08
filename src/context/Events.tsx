@@ -1,9 +1,8 @@
 import { ReactNode, createContext, useState } from "react";
 import { UnionOmit } from "../utils/types";
+import { EVENT_COLORS } from "./useEvents";
 
-const EVENT_COLORS = ["red", "green", "blue"] as const;
-
-type Event = {
+export type Event = {
     id: string;
     name: string;
     color: (typeof EVENT_COLORS)[number];
@@ -17,7 +16,8 @@ type EventsContext = {
     events: Event[];
     addEvent: (event: UnionOmit<Event, "id">) => void; // UnionOmit here will make sure to remove 'id' from all different parts of the union
 };
-const Context = createContext<EventsContext | null>(null);
+
+export const Context = createContext<EventsContext | null>(null);
 
 type EventsProviderProps = {
     children: ReactNode;
