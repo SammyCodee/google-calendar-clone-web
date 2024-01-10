@@ -14,7 +14,9 @@ export type Event = {
 
 type EventsContext = {
     events: Event[];
-    addEvent: (event: UnionOmit<Event, "id">) => void; // UnionOmit here will make sure to remove 'id' from all different parts of the union
+    addEvent: (eventDetails: UnionOmit<Event, "id">) => void; // UnionOmit here will make sure to remove 'id' from all different parts of the union
+    updateEvent: (id: string, eventDetails: UnionOmit<Event, "id">) => void;
+    deleteEvent: (id: string) => void;
 };
 
 export const Context = createContext<EventsContext | null>(null);
@@ -25,12 +27,30 @@ type EventsProviderProps = {
 export function EventsProvider({ children }: EventsProviderProps) {
     const [events, setEvents] = useState<Event[]>([]);
 
-    function addEvent(event: UnionOmit<Event, "id">) {
-        setEvents((e) => [...e, { ...event, id: crypto.randomUUID() }]);
+    function addEvent(eventDetails: UnionOmit<Event, "id">) {
+        setEvents((e) => [...e, { ...eventDetails, id: crypto.randomUUID() }]);
+    }
+
+    function updateEvent(id: string, eventDetails: UnionOmit<Event, "id">) {
+        setEvents((e) => {
+            return e.map((event) => {
+                /**
+                 * check if it is current event, if yes replace with updated event details
+                 * otherwise stay as it was
+                 */
+                return event.id === id ? { id, ...eventDetails } : event;
+            });
+        });
+    }
+
+    function deleteEvent(id: string) {
+        setEvents((e) => e.filter((event) => event.id !== id));
     }
 
     return (
-        <Context.Provider value={{ events, addEvent }}>
+        <Context.Provider
+            value={{ events, addEvent, updateEvent, deleteEvent }}
+        >
             {children}
         </Context.Provider>
     );
