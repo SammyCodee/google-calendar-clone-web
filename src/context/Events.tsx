@@ -66,7 +66,7 @@ function useLocalStorage(key: string, initialValue: Event[]) {
             return { ...event, date: new Date(event.date) };
         });
     });
-    console.log("local storage val", value);
+
     useEffect(() => {
         localStorage.setItem(key, JSON.stringify(value));
     }, [value, key]);
